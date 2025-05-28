@@ -7,13 +7,13 @@ import { User } from './user/user.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'sailu',          // your postgres username
-      password: 'sailu',          // your postgres password
-      database: 'gurushish',      // your database name
+      host: 'dpg-d0rg2b15pdvs73dv7gc0-a',        // Render DB host (internal URL host part)
+      port: 5432,                                 // default Postgres port
+      username: 'sailu',                          // your postgres username
+      password: '9xYqe4jZuekeurKBnNkYctrC5NXDa0GJ',  // your postgres password
+      database: 'gurushish',                      // your database name
       entities: [User],
-      synchronize: true,          // auto create tables in dev
+      synchronize: true,                          // auto create tables (only use in dev)
     }),
     UserModule,
   ],
