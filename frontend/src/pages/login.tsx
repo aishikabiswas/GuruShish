@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+
 export default function Login() {
   const router = useRouter();
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ export default function Login() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -29,19 +31,27 @@ export default function Login() {
       });
 
       const data = await res.json();
+      console.log('Full response data:', data);
 
       if (!res.ok) {
         setError(data.message || 'Login failed');
-      } else {
+      } else if (data.role) {
         console.log('Login success:', data);
-        // Role-based redirect
-        if (data.role === 'student') {
+        const role = data.role;
+        console.log('User role:', role);
+
+        if (role === 'student') {
           router.push('/student');
+        } else if (role === 'teacher') {
+          router.push('/teacher');
         } else {
           router.push('/dashboard');
         }
+      } else {
+        setError('Invalid response from server.');
       }
     } catch (err) {
+      console.error('Error during login:', err);
       setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
