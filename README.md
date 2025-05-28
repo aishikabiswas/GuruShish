@@ -1,6 +1,3 @@
-<div align="center">
-  <img width="400" alt="Gurushish" src="logo.png" />
-</div>
 
 <hr>
 
