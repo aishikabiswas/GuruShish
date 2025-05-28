@@ -19,18 +19,24 @@ export class UserController {
     return { message: 'User registered successfully', userId: user.id };
   }
 
-  // Login user
-  @Post('login')
-  async login(@Body() loginUserDto: LoginUserDto) {
-    const user = await this.userService.validateUser(
-      loginUserDto.email,
-      loginUserDto.password,
-    );
+ // Login user
+@Post('login')
+async login(@Body() loginUserDto: LoginUserDto) {
+  const user = await this.userService.validateUser(
+    loginUserDto.email,
+    loginUserDto.password,
+  );
 
-    if (!user) {
-      throw new BadRequestException('Invalid email or password');
-    }
-
-    return { message: 'Login successful', user };
+  if (!user) {
+    throw new BadRequestException('Invalid email or password');
   }
+
+  return {
+    message: 'Login successful',
+    role: user.role,           // 👈 Send only required info
+    name: user.name,
+    email: user.email,
+    userId: user.id,
+  };
+}
 }
