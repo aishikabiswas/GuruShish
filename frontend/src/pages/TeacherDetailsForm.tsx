@@ -27,8 +27,6 @@ export default function TeacherDetailsForm() {
       setForm({ ...form, [e.target.name]: e.target.value });
     }
   };
-
-
   const removeSlot = (index: number) => {
     const updatedSlots = form.slots.filter((_, i) => i !== index);
     setForm({ ...form, slots: updatedSlots });
