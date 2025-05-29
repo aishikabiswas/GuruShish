@@ -28,9 +28,6 @@ export default function TeacherDetailsForm() {
     }
   };
 
-  const addSlot = () => {
-    setForm({ ...form, slots: [...form.slots, { day: '', time: '' }] });
-  };
 
   const removeSlot = (index: number) => {
     const updatedSlots = form.slots.filter((_, i) => i !== index);
@@ -50,7 +47,7 @@ export default function TeacherDetailsForm() {
 
         {/* Subject */}
         <div>
-          <label className="font-semibold mb-2 block">Subject You Can Teach</label>
+          <label className="font-semibold mb-2 block">Subject</label>
           <input
             type="text"
             name="subject"
@@ -106,7 +103,7 @@ export default function TeacherDetailsForm() {
 
         {/* Slots */}
         <div>
-          <label className="font-semibold mb-2 block">Available Slots</label>
+          <label className="font-semibold mb-2 block">Available Slot</label>
           {form.slots.map((slot, index) => (
             <div key={index} className="flex gap-2 mb-2">
               <input
@@ -138,20 +135,14 @@ export default function TeacherDetailsForm() {
               )}
             </div>
           ))}
-          <button
-            type="button"
-            onClick={addSlot}
-            className="text-blue-600 hover:underline"
-          >
-            + Add Another Slot
-          </button>
+          
         </div>
 
         <button
           type="submit"
           className="bg-blue-700 text-white px-6 py-2 rounded hover:bg-blue-800 transition w-full"
         >
-          Save Details
+          Create slot
         </button>
       </form>
     </div>
