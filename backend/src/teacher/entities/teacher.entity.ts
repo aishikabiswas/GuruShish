@@ -1,26 +1,31 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Slot } from './teacher-slot.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity('teacher')
+@Entity()
 export class Teacher {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ length: 100 })
   username: string;
 
-  @Column()
+  @Column({ length: 100 })
   subject: string;
 
-  @Column()
-  qualification: string;
+  @Column({ length: 100, nullable: true })
+  qualification?: string;
 
-  @Column()
-  experience: string;
+  @Column({ length: 100, nullable: true })
+  experience?: string;
 
-  @Column('numeric')
-  fee: number;
+  @Column('numeric', { nullable: true })
+  fee?: number;
 
-  @OneToMany(() => Slot, slot => slot.teacher)
-  slots: Slot[];
+  @Column({ length: 20, nullable: true })
+  day?: string;
+
+  @Column('time', { nullable: true })
+  start_time?: string;
+
+  @Column('time', { nullable: true })
+  end_time?: string;
 }

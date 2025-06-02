@@ -13,7 +13,7 @@ async function bootstrap() {
   });
 
   // Use PORT from environment variables (important for Render deployment)
-  const port = process.env.PORT || 3003;
+  const port = process.env.PORT || 3047;
 
   // Start listening on the specified port
   await app.listen(port);

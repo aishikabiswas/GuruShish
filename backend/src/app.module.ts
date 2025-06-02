@@ -1,3 +1,4 @@
+// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -6,7 +7,6 @@ import { User } from './user/user.entity';
 
 import { TeacherModule } from './teacher/teacher.module';
 import { Teacher } from './teacher/entities/teacher.entity';
-import { Slot } from './teacher/entities/teacher-slot.entity';
 
 @Module({
   imports: [
@@ -17,8 +17,8 @@ import { Slot } from './teacher/entities/teacher-slot.entity';
       username: 'sailu',
       password: 'sailu',
       database: 'gurushish',
-      entities: [User, Teacher, Slot],
-      synchronize: false, // set to true only for development/testing
+      entities: [User, Teacher],
+      synchronize: false, // true for dev only
     }),
     UserModule,
     TeacherModule,
