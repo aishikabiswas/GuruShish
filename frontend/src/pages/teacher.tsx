@@ -2,11 +2,23 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+type Profile = {
+  username: string;
+  name: string;
+  email: string;
+  phone: string;
+  education: string;
+  experience: string;
+  location: string;
+  subjects: string; // comma-separated string
+  maxStudents: string;
+};
+
 export default function TeacherDashboard() {
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'confirmed' | 'pending'>('profile');
 
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState<Profile>({
     username: '',
     name: '',
     email: '',
@@ -14,38 +26,65 @@ export default function TeacherDashboard() {
     education: '',
     experience: '',
     location: '',
-    subjects: '', // changed from array to comma-separated string
-    maxStudents: '', 
+    subjects: '',
+    maxStudents: '',
   });
 
-  // Store certificate file separately
   const [degreeCertificate, setDegreeCertificate] = useState<File | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
   if (!mounted) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
 
-  // Handle certificate file upload
   const handleCertificateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setDegreeCertificate(e.target.files[0]);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    alert('Profile updated successfully!');
-    console.log('Profile data:', profile);
-    console.log('Uploaded degree certificate:', degreeCertificate);
+  try {
+    const formData = new FormData();
+    formData.append('username', profile.username);
+    formData.append('name', profile.name);
+    formData.append('email', profile.email);
+    formData.append('phone', profile.phone);
+    formData.append('education', profile.education);
+    formData.append('experience', profile.experience);
+    formData.append('location', profile.location);
+    formData.append('subjects', profile.subjects);
+    formData.append('maxStudents', profile.maxStudents);
 
-    // TODO: Send profile and degreeCertificate to backend here
-  };
+    if (degreeCertificate) {
+      formData.append('degreeCertificate', degreeCertificate);
+    }
+
+    const response = await fetch('http://localhost:3045/teacher-profiles', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to save profile');
+    }
+
+    const result = await response.json();
+    alert('Profile saved successfully!');
+    console.log('Saved profile:', result);
+  } catch (error) {
+    console.error('Error saving profile:', error);
+    alert('Failed to save profile');
+  }
+};
+
 
   const handleReset = () => {
     setProfile({
@@ -69,8 +108,7 @@ export default function TeacherDashboard() {
           <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
             <h2 className="text-3xl font-bold mb-6 text-center text-blue-700">Teacher Profile</h2>
             <form onSubmit={handleSubmit} className="space-y-5">
-
-              {/* Username field */}
+              {/* Username */}
               <div>
                 <label className="block text-gray-700 font-medium mb-1 capitalize">Username</label>
                 <input
@@ -83,6 +121,7 @@ export default function TeacherDashboard() {
                 />
               </div>
 
+              {/* Name, Email, Phone, Location */}
               {['name', 'email', 'phone', 'location'].map((field) => (
                 <div key={field}>
                   <label className="block text-gray-700 font-medium mb-1 capitalize">{field}</label>
@@ -97,6 +136,7 @@ export default function TeacherDashboard() {
                 </div>
               ))}
 
+              {/* Education */}
               <div>
                 <label className="block text-gray-700 font-medium mb-1">Education</label>
                 <textarea
@@ -108,6 +148,7 @@ export default function TeacherDashboard() {
                 />
               </div>
 
+              {/* Experience */}
               <div>
                 <label className="block text-gray-700 font-medium mb-1">Experience</label>
                 <textarea
@@ -119,7 +160,7 @@ export default function TeacherDashboard() {
                 />
               </div>
 
-              {/* Single input for subjects, comma-separated */}
+              {/* Subjects */}
               <div>
                 <label className="block text-gray-700 font-medium mb-1">
                   Subjects You Teach <span className="text-sm text-gray-500">(comma separated)</span>
@@ -135,21 +176,16 @@ export default function TeacherDashboard() {
                 />
               </div>
 
-              {/* Dropdown for max students */}
+              {/* Max Students */}
               <div className="mb-6">
-                <label
-                  htmlFor="maxStudents"
-                  className="block text-gray-700 font-medium mb-2"
-                >
+                <label htmlFor="maxStudents" className="block text-gray-700 font-medium mb-2">
                   Max Number of Students You Can Teach
                 </label>
                 <select
                   id="maxStudents"
                   name="maxStudents"
                   value={profile.maxStudents}
-                  onChange={(e) =>
-                    setProfile({ ...profile, maxStudents: e.target.value })
-                  }
+                  onChange={(e) => setProfile({ ...profile, maxStudents: e.target.value })}
                   className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 >
@@ -164,10 +200,9 @@ export default function TeacherDashboard() {
                 </select>
               </div>
 
+              {/* Degree Certificate Upload */}
               <div className="mb-6">
-                <label className="block text-gray-700 font-medium mb-2">
-                  Upload Degree Certificate (PDF or Image)
-                </label>
+                <label className="block text-gray-700 font-medium mb-2">Upload Degree Certificate (PDF or Image)</label>
                 <div className="flex items-center space-x-4 border-2 border-black rounded-md p-2">
                   <label
                     htmlFor="degreeCertificate"
@@ -184,10 +219,7 @@ export default function TeacherDashboard() {
                     required={!degreeCertificate}
                   />
                   {degreeCertificate ? (
-                    <span
-                      className="text-gray-800 truncate max-w-xs"
-                      title={degreeCertificate.name}
-                    >
+                    <span className="text-gray-800 truncate max-w-xs" title={degreeCertificate.name}>
                       {degreeCertificate.name}
                     </span>
                   ) : (
@@ -196,6 +228,7 @@ export default function TeacherDashboard() {
                 </div>
               </div>
 
+              {/* Buttons */}
               <div className="flex space-x-4 pt-4">
                 <button
                   type="submit"
@@ -217,9 +250,7 @@ export default function TeacherDashboard() {
 
         {activeTab === 'confirmed' && (
           <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-green-600">
-              Confirmed Sessions
-            </h2>
+            <h2 className="text-2xl font-semibold mb-4 text-green-600">Confirmed Sessions</h2>
             <p className="text-gray-600">No confirmed sessions yet.</p>
             {/* TODO: Load confirmed sessions */}
           </div>
@@ -227,9 +258,7 @@ export default function TeacherDashboard() {
 
         {activeTab === 'pending' && (
           <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4 text-yellow-600">
-              Pending Sessions
-            </h2>
+            <h2 className="text-2xl font-semibold mb-4 text-yellow-600">Pending Sessions</h2>
             <p className="text-gray-600">No pending sessions yet.</p>
             {/* TODO: Load pending sessions */}
           </div>
@@ -237,9 +266,7 @@ export default function TeacherDashboard() {
       </main>
 
       <aside className="w-64 bg-white p-6 border-l border-gray-200 flex flex-col space-y-4 shadow-lg">
-        <h3 className="text-xl font-bold mb-4 text-center text-blue-800">
-          Dashboard
-        </h3>
+        <h3 className="text-xl font-bold mb-4 text-center text-blue-800">Dashboard</h3>
         <Link href="/TeacherDetailsForm">
           <button className="py-2 rounded-md text-left font-semibold px-4 w-full bg-gray-100 text-gray-800 hover:bg-blue-600 hover:text-white transition">
             Create Slots
@@ -249,10 +276,8 @@ export default function TeacherDashboard() {
         <button
           onClick={() => setActiveTab('confirmed')}
           className={`py-2 rounded-md text-left font-semibold px-4 ${
-            activeTab === 'confirmed'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-800'
-          } hover:bg-blue-600 hover:text-white transition`}
+            activeTab === 'confirmed' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-blue-600 hover:text-white'
+          } transition`}
         >
           Confirmed Sessions
         </button>
@@ -260,21 +285,17 @@ export default function TeacherDashboard() {
         <button
           onClick={() => setActiveTab('pending')}
           className={`py-2 rounded-md text-left font-semibold px-4 ${
-            activeTab === 'pending'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-800'
-          } hover:bg-blue-600 hover:text-white transition`}
+            activeTab === 'pending' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-blue-600 hover:text-white'
+          } transition`}
         >
           Pending Sessions
         </button>
 
         <button
           onClick={() => setActiveTab('profile')}
-          className={`py-2 rounded-md text-left font-semibold px-4 mt-auto ${
-            activeTab === 'profile'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-800'
-          } hover:bg-blue-600 hover:text-white transition`}
+          className={`py-2 rounded-md text-left font-semibold px-4 ${
+            activeTab === 'profile' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-800 hover:bg-blue-600 hover:text-white'
+          } transition`}
         >
           Profile
         </button>
