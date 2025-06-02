@@ -7,14 +7,15 @@ export default function TeacherDashboard() {
   const [activeTab, setActiveTab] = useState<'profile' | 'confirmed' | 'pending'>('profile');
 
   const [profile, setProfile] = useState({
+    username: '',
     name: '',
     email: '',
     phone: '',
     education: '',
     experience: '',
     location: '',
-    subjects: [''],
-    maxStudents: '', // added maxStudents here
+    subjects: '', // changed from array to comma-separated string
+    maxStudents: '', 
   });
 
   // Store certificate file separately
@@ -23,26 +24,10 @@ export default function TeacherDashboard() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
   if (!mounted) return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
-  };
-
-  const handleSubjectChange = (index: number, value: string) => {
-    const newSubjects = [...profile.subjects];
-    newSubjects[index] = value;
-    setProfile({ ...profile, subjects: newSubjects });
-  };
-
-  const addSubject = () => {
-    setProfile({ ...profile, subjects: [...profile.subjects, ''] });
-  };
-
-  const removeSubject = (index: number) => {
-    const newSubjects = profile.subjects.filter((_, i) => i !== index);
-    setProfile({ ...profile, subjects: newSubjects });
   };
 
   // Handle certificate file upload
@@ -64,13 +49,14 @@ export default function TeacherDashboard() {
 
   const handleReset = () => {
     setProfile({
+      username: '',
       name: '',
       email: '',
       phone: '',
       education: '',
       experience: '',
       location: '',
-      subjects: [''],
+      subjects: '',
       maxStudents: '',
     });
     setDegreeCertificate(null);
@@ -83,6 +69,20 @@ export default function TeacherDashboard() {
           <div className="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-lg">
             <h2 className="text-3xl font-bold mb-6 text-center text-blue-700">Teacher Profile</h2>
             <form onSubmit={handleSubmit} className="space-y-5">
+
+              {/* Username field */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-1 capitalize">Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={profile.username}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+
               {['name', 'email', 'phone', 'location'].map((field) => (
                 <div key={field}>
                   <label className="block text-gray-700 font-medium mb-1 capitalize">{field}</label>
@@ -119,36 +119,20 @@ export default function TeacherDashboard() {
                 />
               </div>
 
+              {/* Single input for subjects, comma-separated */}
               <div>
-                <label className="block text-gray-700 font-medium mb-2">Subjects You Teach</label>
-                {profile.subjects.map((subject, index) => (
-                  <div key={index} className="flex items-center mb-2">
-                    <input
-                      type="text"
-                      value={subject}
-                      onChange={(e) => handleSubjectChange(index, e.target.value)}
-                      placeholder={`Subject ${index + 1}`}
-                      className="w-full border border-gray-300 rounded-md p-2 mr-2"
-                      required
-                    />
-                    {profile.subjects.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeSubject(index)}
-                        className="text-red-600 font-bold"
-                      >
-                        &times;
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addSubject}
-                  className="mt-2 text-sm text-blue-600 hover:underline"
-                >
-                  + Add another subject
-                </button>
+                <label className="block text-gray-700 font-medium mb-1">
+                  Subjects You Teach <span className="text-sm text-gray-500">(comma separated)</span>
+                </label>
+                <input
+                  type="text"
+                  name="subjects"
+                  value={profile.subjects}
+                  onChange={handleChange}
+                  placeholder="e.g., Maths, English, Physics"
+                  className="w-full border border-gray-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
               </div>
 
               {/* Dropdown for max students */}

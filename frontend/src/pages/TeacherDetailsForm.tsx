@@ -74,7 +74,7 @@ export default function TeacherDetailsForm() {
 };
 
 
-      const res = await fetch('http://localhost:3047/teacher', {
+      const res = await fetch('http://localhost:3045/teacher', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

@@ -1,93 +1,41 @@
-import { useState } from "react";
-import Link from "next/link";
+'use client';
+
+import { useEffect, useState } from 'react';
+
+interface Teacher {
+  id: number;
+  username: string;
+  subject: string;
+  qualification?: string;
+  experience?: string;
+  fee?: number;
+  day?: string;
+  start_time?: string;
+  end_time?: string;
+}
 
 export default function StudentDashboard() {
-  const [teachers, setTeachers] = useState([
-    {
-      name: "Ravi Teja",
-      subject: "Mathematics",
-      qualification: "PhD in Mathematics",
-      experience: "6 years",
-      location: "Vijayawada, Andhra Pradesh",
-      image: "https://randomuser.me/api/portraits/men/31.jpg",
-      availableSlots: [
-        "Monday - 10 AM to 12 PM",
-        "Wednesday - 1 PM to 3 PM",
-        "Friday - 4 PM to 6 PM",
-      ],
-    },
-    { 
-      name: "Sravani Reddy",
-      subject: "Physics",
-      qualification: "MSc in Physics",
-      experience: "4 years",
-      location: "Warangal, Telangana",
-      image: "https://randomuser.me/api/portraits/women/32.jpg",
-      availableSlots: [
-        "Tuesday - 9 AM to 11 AM",
-        "Thursday - 2 PM to 4 PM",
-        "Saturday - 5 PM to 7 PM",
-      ],
-    },
-    {
-      name: "Anil Kumar",
-      subject: "Chemistry",
-      qualification: "PhD in Chemistry",
-      experience: "7 years",
-      location: "Guntur, Andhra Pradesh",
-      image: "https://randomuser.me/api/portraits/men/33.jpg",
-      availableSlots: [
-        "Tuesday - 10 AM to 12 PM",
-        "Thursday - 1 PM to 3 PM",
-        "Saturday - 3 PM to 5 PM",
-      ],
-    },
-    {
-      name: "Bhavya Lakshmi",
-      subject: "Biology",
-      qualification: "MSc in Biology",
-      experience: "5 years",
-      location: "Nellore, Andhra Pradesh",
-      image: "https://randomuser.me/api/portraits/women/34.jpg",
-      availableSlots: [
-        "Monday - 9 AM to 11 AM",
-        "Wednesday - 12 PM to 2 PM",
-        "Friday - 3 PM to 5 PM",
-      ],
-    },
-    {
-      name: "Kiran Raju",
-      subject: "English",
-      qualification: "MA in English",
-      experience: "5 years",
-      location: "Hyderabad, Telangana",
-      image: "https://randomuser.me/api/portraits/men/35.jpg",
-      availableSlots: [
-        "Tuesday - 8 AM to 10 AM",
-        "Thursday - 11 AM to 1 PM",
-        "Saturday - 4 PM to 6 PM",
-      ],
-    },
-    {
-      name: "Divya Rao",
-      subject: "Telugu",
-      qualification: "MA in Telugu Literature",
-      experience: "8 years",
-      location: "Visakhapatnam, Andhra Pradesh",
-      image: "https://randomuser.me/api/portraits/women/36.jpg",
-      availableSlots: [
-        "Monday - 10 AM to 12 PM",
-        "Wednesday - 2 PM to 4 PM",
-        "Friday - 4 PM to 6 PM",
-      ],
-    },
-  ]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [search, setSearch] = useState('');
 
-  const [search, setSearch] = useState("");
+  useEffect(() => {
+    async function fetchTeachers() {
+      try {
+        const res = await fetch('http://localhost:3045/teacher');
+        if (!res.ok) throw new Error('Failed to fetch');
+        const data = await res.json();
+        setTeachers(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    fetchTeachers();
+  }, []);
 
-  const filteredTeachers = teachers.filter((teacher) =>
-    teacher.name.toLowerCase().includes(search.toLowerCase()) ||
-    teacher.subject.toLowerCase().includes(search.toLowerCase())
+  const filteredTeachers = teachers.filter(
+    (teacher) =>
+      teacher.username.toLowerCase().includes(search.toLowerCase()) ||
+      teacher.subject.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -113,48 +61,39 @@ export default function StudentDashboard() {
         </h2>
 
         <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredTeachers.map((teacher, index) => (
+          {filteredTeachers.map((teacher) => (
             <div
-              key={index}
+              key={teacher.id}
               className="bg-white rounded-xl shadow-md hover:shadow-xl transition-transform transform hover:scale-105 p-6 border border-gray-100"
             >
-              <img
-                src={teacher.image}
-                alt={teacher.name}
-                className="w-full h-48 object-cover rounded-lg mb-4"
-              />
-              <h3 className="text-xl font-semibold text-gray-900">{teacher.name}</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{teacher.username}</h3>
               <p className="text-gray-600 mt-1">
                 Subject: <span className="font-medium">{teacher.subject}</span>
               </p>
               <p className="text-gray-600 mt-1">
-                Qualification: <span className="font-medium">{teacher.qualification}</span>
+                Qualification: <span className="font-medium">{teacher.qualification || 'N/A'}</span>
               </p>
               <p className="text-gray-600 mt-1">
-                Experience: <span className="font-medium">{teacher.experience}</span>
+                Experience: <span className="font-medium">{teacher.experience || 'N/A'}</span>
               </p>
               <p className="text-gray-600 mt-1">
-                Location: <span className="font-medium">{teacher.location}</span>
+                Fee: <span className="font-medium">₹{teacher.fee || 0}</span>
+              </p>
+              <p className="text-gray-600 mt-1">
+                Day: <span className="font-medium">{teacher.day || 'N/A'}</span>
+              </p>
+              <p className="text-gray-600 mt-1">
+                Time: <span className="font-medium">{teacher.start_time} - {teacher.end_time}</span>
               </p>
 
               <div className="mt-4">
-                <h4 className="text-lg font-semibold text-gray-800">Available Slots:</h4>
-                <ul className="mt-2 text-gray-600 list-disc list-inside">
-                  {teacher.availableSlots.map((slot, i) => (
-                    <li key={i}>{slot}</li>
-                  ))}
-                </ul>
+                <button
+                  className="w-full py-2 px-4 bg-[#001f3f] text-white rounded-lg hover:bg-blue-900 transition"
+                  onClick={() => alert(`Viewing profile of ${teacher.username}`)}
+                >
+                  View Profile
+                </button>
               </div>
-
-              <Link
-                href={{
-                  pathname: '/confirm-booking',
-                  query: { teacher: teacher.name }, // Pass teacher name as query param
-                }}
-                className="mt-6 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200 w-full text-center"
-              >
-                Book a Session
-              </Link>
             </div>
           ))}
         </div>
