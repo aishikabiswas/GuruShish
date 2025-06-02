@@ -1,4 +1,3 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -15,17 +14,17 @@ import { Teacher } from './teacher/entities/teacher.entity';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'dpg-d0rg2b15pdvs73dv7gc0-a',
       port: 5432,
       username: 'sailu',
-      password: 'sailu',
+      password: '9xYqe4jZuekeurKBnNkYctrC5NXDa0GJ',
       database: 'gurushish',
-      entities: [User, Teacher, TeacherProfile],  // only entities here
-      synchronize: false, // set true for development only
+      entities: [User, Teacher, TeacherProfile],
+      synchronize: true,
     }),
     UserModule,
     TeacherModule,
-    TeacherProfileModule, // add module here
+    TeacherProfileModule, // ✅ Add it here to be effective
   ],
 })
 export class AppModule {}
