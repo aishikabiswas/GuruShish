@@ -21,7 +21,7 @@ export default function StudentDashboard() {
   useEffect(() => {
     async function fetchTeachers() {
       try {
-        const res = await fetch('http://localhost:3045/teacher');
+        const res = await fetch('https://gurushish-3.onrender.com/teacher');
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
         setTeachers(data);

@@ -67,7 +67,7 @@ export default function TeacherDashboard() {
       formData.append('degreeCertificate', degreeCertificate);
     }
 
-    const response = await fetch('http://localhost:3045/teacher-profiles', {
+    const response = await fetch('https://gurushish-3.onrender.com/teacher-profiles', {
       method: 'POST',
       body: formData,
     });
