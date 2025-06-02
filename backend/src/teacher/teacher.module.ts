@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TeacherService } from './teacher.service';
 import { TeacherController } from './teacher.controller';
-import { Availability } from './entities/availability.entity';
-import { Timeslot } from './entities/timeslot.entity';
+import { Teacher } from './entities/teacher.entity';
+import { Slot } from './entities/teacher-slot.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Availability, Timeslot])],
+  imports: [TypeOrmModule.forFeature([Teacher, Slot])],
   controllers: [TeacherController],
   providers: [TeacherService],
 })

@@ -1,24 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Availability } from './entities/availability.entity';
-import { CreateAvailabilityDto } from './dto/create-teacher.dto';
+import { Teacher } from './entities/teacher.entity';
+import { CreateTeacherDto } from './dto/create-teacher.dto';
+import { Slot } from './entities/teacher-slot.entity';
 
 @Injectable()
 export class TeacherService {
   constructor(
-    @InjectRepository(Availability)
-    private availabilityRepository: Repository<Availability>,
+    @InjectRepository(Teacher)
+    private teacherRepository: Repository<Teacher>,
+    @InjectRepository(Slot)
+    private slotRepository: Repository<Slot>,
   ) {}
 
-  async create(createAvailabilityDto: CreateAvailabilityDto): Promise<Availability> {
-    const availability = this.availabilityRepository.create(createAvailabilityDto);
-    return await this.availabilityRepository.save(availability);
+  async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
+    const { slots, fee, ...teacherData } = createTeacherDto;
+    const teacher = this.teacherRepository.create({
+      ...teacherData,
+      fee: Number(fee),
+      slots: slots.map(slot => this.slotRepository.create(slot)),
+    });
+    return this.teacherRepository.save(teacher);
   }
-
-  async findAll(): Promise<Availability[]> {
-    return await this.availabilityRepository.find();
-  }
-
-  // Add other methods like findOne, update, delete as needed
 }

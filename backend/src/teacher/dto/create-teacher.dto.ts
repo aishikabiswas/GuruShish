@@ -1,35 +1,36 @@
-import { IsString, IsNotEmpty, ValidateNested, ArrayMinSize } from 'class-validator';
+import { IsString, IsNumber, IsArray, ValidateNested, ArrayMinSize } from 'class-validator';
 import { Type } from 'class-transformer';
 
-class TimeslotDto {
+export class CreateSlotDto {
   @IsString()
-  @IsNotEmpty()
   day: string;
 
   @IsString()
-  @IsNotEmpty()
-  time: string;
+  start_time: string;
+
+  @IsString()
+  end_time: string;
 }
 
-export class CreateAvailabilityDto {
+export class CreateTeacherDto {
   @IsString()
-  @IsNotEmpty()
+  username: string;
+
+  @IsString()
   subject: string;
 
   @IsString()
-  @IsNotEmpty()
   qualification: string;
 
   @IsString()
-  @IsNotEmpty()
   experience: string;
 
-  @IsString()
-  @IsNotEmpty()
-  location: string;
+  @IsNumber()
+  fee: number;
 
+  @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => TimeslotDto)
+  @Type(() => CreateSlotDto)
   @ArrayMinSize(1)
-  timeslots: TimeslotDto[];
+  slots: CreateSlotDto[];
 }
