@@ -2,21 +2,17 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
-
-type Slot = {
-  day: string;
-  start_time: string;
-  end_time: string;
-};
+import toast, { Toaster } from 'react-hot-toast';
 
 type FormState = {
   username: string;
   subject: string;
   qualification: string;
   experience: string;
-  fee: string;  // fee input stays string to allow user input, converted on submit
-  slots: Slot[];
+  fee: string;
+  day: string;
+  start_time: string;
+  end_time: string;
 };
 
 export default function TeacherDetailsForm() {
@@ -29,53 +25,56 @@ export default function TeacherDetailsForm() {
     qualification: '',
     experience: '',
     fee: '',
-    slots: [{ day: '', start_time: '', end_time: '' }],
+    day: '',
+    start_time: '',
+    end_time: '',
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    index?: number
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
 
-    if (['day', 'start_time', 'end_time'].includes(name) && typeof index === 'number') {
-      const updatedSlots = [...form.slots];
-      updatedSlots[index] = { ...updatedSlots[index], [name]: value };
-      setForm({ ...form, slots: updatedSlots });
-    } else {
-      setForm({ ...form, [name]: value });
+  const isFormValid = () => {
+    const { username, subject, qualification, experience, fee, day, start_time, end_time } = form;
+    if (!username || !subject || !qualification || !experience || !fee || !day || !start_time || !end_time) {
+      toast.error('Please fill in all fields.');
+      return false;
     }
-  };
 
-  const addSlot = () => {
-    setForm({ ...form, slots: [...form.slots, { day: '', start_time: '', end_time: '' }] });
-  };
+    if (isNaN(Number(fee)) || Number(fee) <= 0) {
+      toast.error('Fee must be a valid positive number.');
+      return false;
+    }
 
-  const removeSlot = (index: number) => {
-    const updatedSlots = form.slots.filter((_, i) => i !== index);
-    setForm({ ...form, slots: updatedSlots });
+    if (start_time >= end_time) {
+      toast.error('Start time must be earlier than end time.');
+      return false;
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate time range
-    for (const slot of form.slots) {
-      if (slot.start_time >= slot.end_time) {
-        toast.error(`Invalid time range: ${slot.day}`);
-        return;
-      }
-    }
+    if (!isFormValid()) return;
 
     setIsSubmitting(true);
-
     try {
       const payload = {
-        ...form,
-        fee: Number(form.fee), // convert fee to number
-      };
+  username: form.username,
+  subject: form.subject,
+  qualification: form.qualification,
+  experience: form.experience,
+  fee: Number(form.fee),
+  day: form.day,
+  start_time: form.start_time,
+  end_time: form.end_time,
+};
 
-      const res = await fetch('http://localhost:3003/teacher', {
+
+      const res = await fetch('http://localhost:3047/teacher', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -83,7 +82,7 @@ export default function TeacherDetailsForm() {
 
       if (res.status === 201) {
         toast.success('Details submitted successfully!');
-        router.push('/TeacherDetailsPage');
+        setTimeout(() => router.push('/TeacherDetailsPage'), 1000);
       } else {
         const errorData = await res.json();
         toast.error(`Error: ${errorData.message || 'Failed to submit details'}`);
@@ -98,6 +97,7 @@ export default function TeacherDetailsForm() {
 
   return (
     <div className="max-w-3xl mx-auto p-8 bg-white mt-10 shadow-lg rounded-xl">
+      <Toaster />
       <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Enter Teaching Details</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <InputField label="User Name" name="username" value={form.username} onChange={handleChange} />
@@ -107,55 +107,37 @@ export default function TeacherDetailsForm() {
         <InputField label="Fee per Session (INR)" name="fee" value={form.fee} onChange={handleChange} />
 
         <div>
-          <label className="font-semibold mb-2 block">Available Slots</label>
-          {form.slots.map((slot, index) => (
-            <div key={index} className="flex flex-wrap gap-2 mb-3 items-center">
-              <select
-                name="day"
-                value={slot.day}
-                onChange={(e) => handleChange(e, index)}
-                className="flex-1 border rounded p-2 min-w-[120px]"
-                required
-              >
-                <option value="">Select Day</option>
-                {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
-                  <option key={day} value={day}>{day}</option>
-                ))}
-              </select>
-              <input
-                type="time"
-                name="start_time"
-                value={slot.start_time}
-                onChange={(e) => handleChange(e, index)}
-                className="flex-1 border rounded p-2 min-w-[100px]"
-                required
-              />
-              <input
-                type="time"
-                name="end_time"
-                value={slot.end_time}
-                onChange={(e) => handleChange(e, index)}
-                className="flex-1 border rounded p-2 min-w-[100px]"
-                required
-              />
-              {index > 0 && (
-                <button
-                  type="button"
-                  onClick={() => removeSlot(index)}
-                  className="text-red-600 font-bold hover:scale-105 transition"
-                >
-                  ✕
-                </button>
-              )}
-            </div>
-          ))}
-          <button
-            type="button"
-            onClick={addSlot}
-            className="mt-2 bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 transition"
-          >
-            + Add Slot
-          </button>
+          <label className="font-semibold mb-2 block">Available Slot</label>
+          <div className="flex flex-wrap gap-2 mb-3 items-center">
+            <select
+              name="day"
+              value={form.day}
+              onChange={handleChange}
+              className="flex-1 border rounded p-2 min-w-[120px]"
+              required
+            >
+              <option value="">Select Day</option>
+              {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
+                <option key={day} value={day}>{day}</option>
+              ))}
+            </select>
+            <input
+              type="time"
+              name="start_time"
+              value={form.start_time}
+              onChange={handleChange}
+              className="flex-1 border rounded p-2 min-w-[100px]"
+              required
+            />
+            <input
+              type="time"
+              name="end_time"
+              value={form.end_time}
+              onChange={handleChange}
+              className="flex-1 border rounded p-2 min-w-[100px]"
+              required
+            />
+          </div>
         </div>
 
         <button
