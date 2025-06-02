@@ -5,6 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
 
+import { TeacherProfileModule } from './teacher-profile/teacher-profile.module';
+import { TeacherProfile } from './teacher-profile/entities/teacher-profile.entity';
+
 import { TeacherModule } from './teacher/teacher.module';
 import { Teacher } from './teacher/entities/teacher.entity';
 
@@ -17,11 +20,12 @@ import { Teacher } from './teacher/entities/teacher.entity';
       username: 'sailu',
       password: 'sailu',
       database: 'gurushish',
-      entities: [User, Teacher],
-      synchronize: false, // true for dev only
+      entities: [User, Teacher, TeacherProfile],  // only entities here
+      synchronize: false, // set true for development only
     }),
     UserModule,
     TeacherModule,
+    TeacherProfileModule, // add module here
   ],
 })
 export class AppModule {}
