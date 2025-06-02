@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Login() {
   const router = useRouter();
@@ -33,25 +35,31 @@ export default function Login() {
       const data = await res.json();
       console.log('Full response data:', data);
 
-      if (!res.ok) {
+ if (!res.ok) {
         setError(data.message || 'Login failed');
-      } else if (data.role) {
-        console.log('Login success:', data);
-        const role = data.role;
-        console.log('User role:', role);
-
-        if (role === 'student') {
-          router.push('/student');
-        } else if (role === 'teacher') {
-          router.push('/teacher');
-        } else {
-          router.push('/dashboard');
-        }
+        toast.error(data.message || 'Login failed');
       } else {
-        setError('Invalid response from server.');
+        // ✅ Store user info in localStorage
+        localStorage.setItem('userId', data.id);
+        localStorage.setItem('email', data.email);
+        localStorage.setItem('password', formData.password); // optional
+
+        toast.success('Login successful! Redirecting...');
+
+        // ✅ Navigate based on role
+        setTimeout(() => {
+          if (data.role === 'student') {
+            router.push('/student');
+          } else if (data.role === 'teacher') {
+            router.push('/teacher');
+          } else {
+            router.push('/dashboard');
+          }
+        }, 1500);
       }
     } catch (err) {
-      console.error('Error during login:', err);
+      console.error('Login error:', err);
+      toast.error('Something went wrong. Please try again.');
       setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
