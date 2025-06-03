@@ -26,7 +26,6 @@ interface TeacherProfile {
   degree_certificate_path: string;
 }
 
-
 export default function StudentDashboard() {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [search, setSearch] = useState('');
