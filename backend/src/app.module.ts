@@ -26,7 +26,7 @@ import { Teacher } from './teacher/entities/teacher.entity';
       password: 'sailu',  // replace with your local DB password
       database: 'gurushish',     // make sure this DB exists locally
       entities: [User, Teacher, TeacherProfile],
-      synchronize: false,         // auto-create tables (disable in production)
+      synchronize: true,         // auto-create tables (disable in production)
     }),
     UserModule,
     TeacherModule,
