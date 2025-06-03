@@ -1,3 +1,4 @@
+// teacher-profile.controller.ts
 import {
   Controller,
   Get,
@@ -26,7 +27,7 @@ export class TeacherProfileController {
   @UseInterceptors(
     FileInterceptor('degreeCertificate', {
       storage: diskStorage({
-        destination: './uploads', // make sure this folder exists
+        destination: './uploads',
         filename: (req, file, cb) => {
           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
@@ -39,7 +40,7 @@ export class TeacherProfileController {
         }
         cb(null, true);
       },
-      limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max size
+      limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
     }),
   )
   async create(
@@ -47,29 +48,39 @@ export class TeacherProfileController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (file) {
-      createDto.degree_certificate_path = file.path; // save file path
+      createDto.degree_certificate_path = file.path;
     }
-    return this.teacherProfileService.create(createDto);
+    return await this.teacherProfileService.create(createDto);
   }
 
   @Get()
-  findAll() {
-    return this.teacherProfileService.findAll();
+  async findAll() {
+    return await this.teacherProfileService.findAll();
   }
+
+@Get('username/:username')
+async findByUsername(@Param('username') username: string) {
+  console.log('Fetching teacher profile with username:', username);
+  return await this.teacherProfileService.findByUsername(username);
+}
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.teacherProfileService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.teacherProfileService.findOne(id);
   }
 
+
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateDto: UpdateTeacherProfileDto) {
-    return this.teacherProfileService.update(id, updateDto);
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateTeacherProfileDto,
+  ) {
+    return await this.teacherProfileService.update(id, updateDto);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.teacherProfileService.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    await this.teacherProfileService.remove(id);
+    return { message: 'Teacher profile deleted successfully' };
   }
 }
-

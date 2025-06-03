@@ -1,4 +1,6 @@
+// create-teacher-profile.dto.ts
 import { IsString, IsInt, IsOptional, IsNotEmpty, IsEmail } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateTeacherProfileDto {
   @IsString()
@@ -34,9 +36,11 @@ export class CreateTeacherProfileDto {
 
   @IsOptional()
   @IsInt()
+  @Type(() => Number)
   max_students?: number;
 
   @IsOptional()
   @IsString()
-  degree_certificate_path?: string;  // This will store file path
+  degree_certificate_path?: string;
 }
+

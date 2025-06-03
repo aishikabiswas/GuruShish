@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
@@ -12,19 +14,23 @@ import { Teacher } from './teacher/entities/teacher.entity';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'), // Path to the uploads folder
+      serveRoot: '/uploads', // URL prefix for serving static files
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'dpg-d0rg2b15pdvs73dv7gc0-a',
-      port: 5432,
-      username: 'sailu',
-      password: '9xYqe4jZuekeurKBnNkYctrC5NXDa0GJ',
-      database: 'gurushish',
+      host: 'localhost', // localhost for local dev
+      port: 5432,         // default PostgreSQL port
+      username: 'sailu',  // change if your local DB uses a different user
+      password: 'sailu',  // replace with your local DB password
+      database: 'gurushish',     // make sure this DB exists locally
       entities: [User, Teacher, TeacherProfile],
-      synchronize: true,
+      synchronize: false,         // auto-create tables (disable in production)
     }),
     UserModule,
     TeacherModule,
-    TeacherProfileModule, // ✅ Add it here to be effective
+    TeacherProfileModule,
   ],
 })
 export class AppModule {}
