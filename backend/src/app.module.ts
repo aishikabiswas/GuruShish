@@ -15,18 +15,18 @@ import { Teacher } from './teacher/entities/teacher.entity';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'), // Path to the uploads folder
-      serveRoot: '/uploads', // URL prefix for serving static files
+      rootPath: join(__dirname, '..', 'uploads'), // Serve static files from uploads folder
+      serveRoot: '/uploads', // URL prefix
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost', // localhost for local dev
-      port: 5432,         // default PostgreSQL port
-      username: 'sailu',  // change if your local DB uses a different user
-      password: 'sailu',  // replace with your local DB password
-      database: 'gurushish',     // make sure this DB exists locally
+      host: 'dpg-d0rg2b15pdvs73dv7gc0-a',
+      port: 5432,
+      username: 'sailu',
+      password: '9xYqe4jZuekeurKBnNkYctrC5NXDa0GJ',
+      database: 'gurushish',
       entities: [User, Teacher, TeacherProfile],
-      synchronize: true,         // auto-create tables (disable in production)
+      synchronize: true, // Disable in production
     }),
     UserModule,
     TeacherModule,
