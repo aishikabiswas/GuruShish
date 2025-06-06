@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Booking } from '../../bookings/bookings.entity';
 
 @Entity()
 export class Teacher {
@@ -28,4 +29,7 @@ export class Teacher {
 
   @Column('time', { nullable: true })
   end_time?: string;
+
+  @OneToMany(() => Booking, (booking) => booking.teacher)
+  bookings: Booking[];
 }
