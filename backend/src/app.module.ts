@@ -15,7 +15,7 @@ import { Teacher } from './teacher/entities/teacher.entity';
 import { BookingsModule } from './bookings/bookings.module';
 import { Booking } from './bookings/bookings.entity';
 
-@Module({
+@Module({ 
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'), // Serve static files from uploads folder
