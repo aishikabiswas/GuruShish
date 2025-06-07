@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 
 interface Booking {
@@ -70,7 +71,6 @@ const PendingSessions: React.FC = () => {
     if (!window.confirm('Are you sure you want to decline this booking?')) return;
 
     setDecliningId(id);  // To show loading on button
-
     try {
       const res = await fetch(`http://localhost:3045/bookings/${id}`, {
         method: 'DELETE',
