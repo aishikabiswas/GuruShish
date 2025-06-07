@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -10,33 +9,37 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Login() {
   const router = useRouter();
 
+  // Form state
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Handle input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Handle form submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3045/users/login', {
+      const res = await fetch('https://gurushish-8.onrender.com/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
+      // If response not ok, try to extract error message
       if (!res.ok) {
         let errorMsg = 'Login failed';
         try {
           const errData = await res.json();
           errorMsg = errData.message || errorMsg;
         } catch {
-          // ignore
+          // Ignore JSON parsing error
         }
         setError(errorMsg);
         toast.error(errorMsg);
@@ -47,32 +50,29 @@ export default function Login() {
       const data = await res.json();
       console.log('Login response:', data);
 
-      try {
-        localStorage.setItem('userId', data.id);
-        localStorage.setItem('email', data.email);
-      } catch (e) {
-        console.error('localStorage error:', e);
-      }
+      // Save user info to localStorage
+      localStorage.setItem('userId', data.id);
+      localStorage.setItem('email', data.email);
 
-      // If teacher, try to fetch username
+      // If teacher, fetch username from teacher-profiles by email
       if (data.role === 'teacher') {
         try {
           const profileRes = await fetch(
-            `http://localhost:3045/teacher-profiles/email/${encodeURIComponent(data.email)}`
+            `https://gurushish-8.onrender.com/teacher-profiles/email/${encodeURIComponent(data.email)}`
           );
 
-          if (profileRes.status === 404) {
-            console.log('No teacher profile found, skipping username fetch.');
-          } else if (!profileRes.ok) {
-            throw new Error('Failed to fetch teacher profile');
+          if (!profileRes.ok) {
+            throw new Error('Profile not found');
+          }
+
+          const profileData = await profileRes.json();
+
+          if (profileData.username) {
+            localStorage.setItem('username', profileData.username);
+            console.log('Stored username:', profileData.username);
           } else {
-            const profileData = await profileRes.json();
-            if (profileData.username) {
-              localStorage.setItem('username', profileData.username);
-              console.log('Stored username:', profileData.username);
-            } else {
-              console.warn('Username missing in profile data.');
-            }
+            toast.error('Username not found in profile data.');
+            console.error('Username missing in profile data.');
           }
         } catch (err) {
           toast.error('Failed to retrieve teacher username.');
@@ -82,14 +82,16 @@ export default function Login() {
 
       toast.success('Login successful! Redirecting...');
 
-      // **Direct redirect without delay**
-      if (data.role === 'student') {
-        router.push('/student');
-      } else if (data.role === 'teacher') {
-        router.push('/teacher');
-      } else {
-        router.push('/dashboard');
-      }
+      // Redirect after short delay
+      setTimeout(() => {
+        if (data.role === 'student') {
+          router.push('/student');
+        } else if (data.role === 'teacher') {
+          router.push('/teacher');
+        } else {
+          router.push('/dashboard');
+        }
+      }, 1500);
     } catch (err) {
       console.error('Network or fetch error:', err);
       setError('Network error: unable to contact server.');
