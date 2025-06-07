@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function Login() {
   const router = useRouter();
+
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -22,46 +23,55 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // Step 1: Login
-      const res = await fetch('https://gurushish-3.onrender.com/users/login', {
+      const res = await fetch('http://localhost:3045/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
-      console.log('Login response:', data);
-
       if (!res.ok) {
-        setError(data.message || 'Login failed');
-        toast.error(data.message || 'Login failed');
+        let errorMsg = 'Login failed';
+        try {
+          const errData = await res.json();
+          errorMsg = errData.message || errorMsg;
+        } catch {
+          // ignore
+        }
+        setError(errorMsg);
+        toast.error(errorMsg);
         setLoading(false);
         return;
       }
 
-      // Store common user info
-      localStorage.setItem('userId', data.id);
-      localStorage.setItem('email', data.email);
+      const data = await res.json();
+      console.log('Login response:', data);
 
-      // Step 2: If teacher, fetch username from teacher_profiles using email
+      try {
+        localStorage.setItem('userId', data.id);
+        localStorage.setItem('email', data.email);
+      } catch (e) {
+        console.error('localStorage error:', e);
+      }
+
+      // If teacher, try to fetch username
       if (data.role === 'teacher') {
         try {
           const profileRes = await fetch(
-            `https://gurushish-3.onrender.com/teacher-profiles/email/${encodeURIComponent(data.email)}`
+            `http://localhost:3045/teacher-profiles/email/${encodeURIComponent(data.email)}`
           );
 
-          if (!profileRes.ok) {
-            throw new Error('Profile not found');
-          }
-
-          const profileData = await profileRes.json();
-
-          if (profileData.username) {
-            localStorage.setItem('username', profileData.username);
-            console.log('Stored username:', profileData.username);
+          if (profileRes.status === 404) {
+            console.log('No teacher profile found, skipping username fetch.');
+          } else if (!profileRes.ok) {
+            throw new Error('Failed to fetch teacher profile');
           } else {
-            toast.error('Username not found in profile data.');
-            console.error('Username missing in profile data.');
+            const profileData = await profileRes.json();
+            if (profileData.username) {
+              localStorage.setItem('username', profileData.username);
+              console.log('Stored username:', profileData.username);
+            } else {
+              console.warn('Username missing in profile data.');
+            }
           }
         } catch (err) {
           toast.error('Failed to retrieve teacher username.');
@@ -71,19 +81,18 @@ export default function Login() {
 
       toast.success('Login successful! Redirecting...');
 
-      setTimeout(() => {
-        if (data.role === 'student') {
-          router.push('/student');
-        } else if (data.role === 'teacher') {
-          router.push('/teacher');
-        } else {
-          router.push('/dashboard');
-        }
-      }, 1500);
+      // **Direct redirect without delay**
+      if (data.role === 'student') {
+        router.push('/student');
+      } else if (data.role === 'teacher') {
+        router.push('/teacher');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err) {
-      console.error('Login error:', err);
-      setError('Something went wrong. Please try again.');
-      toast.error('Something went wrong. Please try again.');
+      console.error('Network or fetch error:', err);
+      setError('Network error: unable to contact server.');
+      toast.error('Network error: unable to contact server.');
     } finally {
       setLoading(false);
     }

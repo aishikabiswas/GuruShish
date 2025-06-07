@@ -54,7 +54,7 @@ const PendingSessions: React.FC = () => {
         setLoading(true);
 
         const res = await fetch(
-          `https://gurushish-3.onrender.com/bookings/teacher/${encodeURIComponent(teacherUsername)}`
+          `http://localhost:3045/bookings/teacher/${encodeURIComponent(teacherUsername)}`
         );
 
         if (!res.ok) {
@@ -86,7 +86,7 @@ const PendingSessions: React.FC = () => {
     setDecliningId(id);
 
     try {
-      const res = await fetch(`https://gurushish-3.onrender.com/bookings/${id}`, {
+      const res = await fetch(`http://localhost:3045/bookings/${id}`, {
         method: "DELETE",
       });
 
