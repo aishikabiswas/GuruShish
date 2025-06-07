@@ -6,11 +6,11 @@ import { join } from 'path';
 import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
 
-import { TeacherProfileModule } from './teacher-profile/teacher-profile.module';
-import { TeacherProfile } from './teacher-profile/entities/teacher-profile.entity';
-
 import { TeacherModule } from './teacher/teacher.module';
 import { Teacher } from './teacher/entities/teacher.entity';
+
+import { TeacherProfileModule } from './teacher-profile/teacher-profile.module';
+import { TeacherProfile } from './teacher-profile/entities/teacher-profile.entity';
 
 import { BookingsModule } from './bookings/bookings.module';
 import { Booking } from './bookings/bookings.entity';
@@ -18,23 +18,23 @@ import { Booking } from './bookings/bookings.entity';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'), // Serve static files from uploads folder
-      serveRoot: '/uploads', // URL prefix
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
-    TypeOrmModule.forRoot({
+     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
+      host: 'dpg-d0rg2b15pdvs73dv7gc0-a',
       port: 5432,
-      username: 'sailu',      // your local DB username
-      password: 'sailu',      // your local DB password
-      database: 'gurushish',  // local database name
-      entities: [User, Teacher, TeacherProfile, Booking],  // added Booking entity here
-      synchronize: false, // set true only in development
+      username: 'sailu',
+      password: '9xYqe4jZuekeurKBnNkYctrC5NXDa0GJ',
+      database: 'gurushish',
+      entities: [User, Teacher, TeacherProfile, Booking],
+      synchronize: true, // Disable in production
     }),
     UserModule,
     TeacherModule,
     TeacherProfileModule,
-    BookingsModule,  // import booking module here
+    BookingsModule,
   ],
 })
 export class AppModule {}
