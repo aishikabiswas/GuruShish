@@ -10,7 +10,7 @@ async function bootstrap() {
 
 
   // Use PORT from environment variables (important for Render deployment)
-  const port = process.env.PORT || 3047;
+  const port = process.env.PORT || 3045;
 
   await app.listen(port);
   console.log(`Backend running on http://localhost:${port}`);

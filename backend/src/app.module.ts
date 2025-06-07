@@ -18,24 +18,24 @@ import { Booking } from './bookings/bookings.entity';
 @Module({ 
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'), // Serve static files from uploads folder
-      serveRoot: '/uploads', // URL prefix
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'dpg-d0rg2b15pdvs73dv7gc0-a',
+      host: 'localhost',  // changed here
       port: 5432,
       username: 'sailu',
-      password: '9xYqe4jZuekeurKBnNkYctrC5NXDa0GJ',
+      password: 'sailu',
       database: 'gurushish',
       entities: [User, Teacher, TeacherProfile, Booking],
-      synchronize: true, 
+      synchronize: false,
     }),
 
     UserModule,
     TeacherModule,
     TeacherProfileModule,
-    BookingsModule,  // import booking module here
+    BookingsModule,
   ],
 })
 export class AppModule {}
