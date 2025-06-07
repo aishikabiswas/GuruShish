@@ -15,18 +15,17 @@ export class Booking {
   id: number;
 
   @Column()
-  student_email: string;  // just FK as string column
+  student_email: string;
 
   @Column()
-  teacher_username: string; // just FK as string column
+  teacher_username: string;
 
   @Column({ default: 'pending' })
-  status: 'pending' | 'confirmed';
+  status: 'pending' | 'confirmed' | 'declined';
 
   @CreateDateColumn()
   created_at: Date;
 
-  // Relations to enable eager fetching if you want
   @ManyToOne(() => User, (user) => user.bookings, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'student_email', referencedColumnName: 'email' })
   student: User;

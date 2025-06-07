@@ -31,6 +31,10 @@ export class TeacherProfileService {
     return profile;
   }
 
+  async findByEmail(email: string): Promise<TeacherProfile | null> {
+  return await this.teacherProfileRepo.findOne({ where: { email } });
+}
+
   async findByUsername(username: string): Promise<TeacherProfile> {
   console.log('Searching for username:', username);
   const profile = await this.teacherProfileRepo.findOne({ where: { username } });

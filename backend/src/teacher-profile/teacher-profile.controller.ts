@@ -1,4 +1,3 @@
-// teacher-profile.controller.ts
 import {
   Controller,
   Get,
@@ -10,6 +9,7 @@ import {
   ParseIntPipe,
   UploadedFile,
   UseInterceptors,
+  NotFoundException,   // <--- Import here
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -58,17 +58,25 @@ export class TeacherProfileController {
     return await this.teacherProfileService.findAll();
   }
 
-@Get('username/:username')
-async findByUsername(@Param('username') username: string) {
-  console.log('Fetching teacher profile with username:', username);
-  return await this.teacherProfileService.findByUsername(username);
-}
+  @Get('email/:email')
+  async findByEmail(@Param('email') email: string) {
+    const profile = await this.teacherProfileService.findByEmail(email);
+    if (!profile) {
+      throw new NotFoundException(`Profile with email ${email} not found`);
+    }
+    return profile;
+  }
+
+  @Get('username/:username')
+  async findByUsername(@Param('username') username: string) {
+    console.log('Fetching teacher profile with username:', username);
+    return await this.teacherProfileService.findByUsername(username);
+  }
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return await this.teacherProfileService.findOne(id);
   }
-
 
   @Patch(':id')
   async update(

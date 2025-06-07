@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common'; 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Booking } from './bookings.entity';
@@ -43,14 +43,14 @@ export class BookingsService {
   async findByStudent(email: string): Promise<Booking[]> {
     return this.bookingRepo.find({
       where: { student_email: email },
-      relations: ['teacher', 'student'], // fetch related details
+      relations: ['teacher', 'student'],
     });
   }
 
   async findByTeacher(username: string): Promise<Booking[]> {
     return this.bookingRepo.find({
       where: { teacher_username: username },
-      relations: ['teacher', 'student'], // fetch related details
+      relations: ['teacher', 'student'],
     });
   }
 
@@ -61,5 +61,15 @@ export class BookingsService {
     }
     await this.bookingRepo.remove(booking);
     return { message: 'Booking deleted successfully' };
+  }
+
+  // New method to update booking status
+  async updateBookingStatus(id: number, status: 'confirmed' | 'declined'): Promise<Booking> {
+    const booking = await this.bookingRepo.findOneBy({ id });
+    if (!booking) {
+      throw new NotFoundException('Booking not found');
+    }
+    booking.status = status;
+    return this.bookingRepo.save(booking);
   }
 }
