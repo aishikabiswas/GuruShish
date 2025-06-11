@@ -1,8 +1,6 @@
-// teacher-profile.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
 import { TeacherProfile } from './entities/teacher-profile.entity';
 import { CreateTeacherProfileDto } from './dto/create-teacher-profile.dto';
 import { UpdateTeacherProfileDto } from './dto/update-teacher-profile.dto';
@@ -15,6 +13,20 @@ export class TeacherProfileService {
   ) {}
 
   async create(createDto: CreateTeacherProfileDto): Promise<TeacherProfile> {
+    const existingEmail = await this.teacherProfileRepo.findOne({
+      where: { email: createDto.email },
+    });
+    if (existingEmail) {
+      throw new ConflictException('Email already exists');
+    }
+
+    const existingUsername = await this.teacherProfileRepo.findOne({
+      where: { username: createDto.username },
+    });
+    if (existingUsername) {
+      throw new ConflictException('Username already exists');
+    }
+
     const profile = this.teacherProfileRepo.create(createDto);
     return await this.teacherProfileRepo.save(profile);
   }
@@ -32,21 +44,16 @@ export class TeacherProfileService {
   }
 
   async findByEmail(email: string): Promise<TeacherProfile | null> {
-  return await this.teacherProfileRepo.findOne({ where: { email } });
-}
-
-  async findByUsername(username: string): Promise<TeacherProfile> {
-  console.log('Searching for username:', username);
-  const profile = await this.teacherProfileRepo.findOne({ where: { username } });
-  console.log('Found profile:', profile);
-  
-  if (!profile) {
-    throw new NotFoundException(`Profile with username ${username} not found`);
+    return await this.teacherProfileRepo.findOne({ where: { email } });
   }
 
-  return profile;
-}
-
+  async findByUsername(username: string): Promise<TeacherProfile> {
+    const profile = await this.teacherProfileRepo.findOne({ where: { username } });
+    if (!profile) {
+      throw new NotFoundException(`Profile with username ${username} not found`);
+    }
+    return profile;
+  }
 
   async update(id: number, updateDto: UpdateTeacherProfileDto): Promise<TeacherProfile> {
     const profile = await this.teacherProfileRepo.preload({ id, ...updateDto });

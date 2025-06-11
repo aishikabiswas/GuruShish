@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Teacher } from './entities/teacher.entity';
@@ -12,8 +12,15 @@ export class TeacherService {
   ) {}
 
   async create(createTeacherDto: CreateTeacherDto): Promise<Teacher> {
-    const teacher = this.teacherRepository.create(createTeacherDto);
-    return this.teacherRepository.save(teacher);
+    try {
+      const teacher = this.teacherRepository.create(createTeacherDto);
+      return await this.teacherRepository.save(teacher);
+    } catch (error: any) {
+      if (error.code === '23505') {
+        throw new ConflictException('Username already exists.');
+      }
+      throw error;
+    }
   }
 
   async findAll(): Promise<Teacher[]> {

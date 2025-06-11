@@ -21,15 +21,16 @@ import { Booking } from './bookings/bookings.entity';
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
     }),
-    TypeOrmModule.forRoot({
+     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',  // changed here
+      host: 'dpg-d14lfpfdiees73f97hg0-a', 
       port: 5432,
       username: 'sailu',
-      password: 'sailu',
-      database: 'gurushish',
+      password: 'NP07UaV1V72BVg6IcqKznSzG78PoHK5v',
+      database: 'gurushish_db',
       entities: [User, Teacher, TeacherProfile, Booking],
-      synchronize: false,
+      synchronize: true, // Disable in production
+
     }),
 
     UserModule,
