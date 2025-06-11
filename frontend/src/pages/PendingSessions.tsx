@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -37,7 +36,7 @@ const PendingSessions: React.FC = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const username = localStorage.getItem("username") || ""; // Updated key here
-      console.log("Username from localStorage:", username);
+      console.log("Username from localStorage:", username); // Check if username is correct
       setTeacherUsername(username);
     }
   }, []);
@@ -55,7 +54,7 @@ const PendingSessions: React.FC = () => {
         setLoading(true);
 
         const res = await fetch(
-          `https://gurushish-8.onrender.com/bookings/teacher/${encodeURIComponent(teacherUsername)}`
+          `http://localhost:3040/bookings/teacher/${encodeURIComponent(teacherUsername)}`
         );
 
         if (!res.ok) {
@@ -65,7 +64,7 @@ const PendingSessions: React.FC = () => {
         }
 
         const data: Booking[] = await res.json();
-        console.log("Fetched bookings:", data);
+        console.log("Fetched bookings:", data); // Log fetched data
 
         setBookings(data);
       } catch (e) {
@@ -81,13 +80,15 @@ const PendingSessions: React.FC = () => {
 
   const pendingBookings = bookings.filter((b) => b.status.toLowerCase() === "pending");
 
+  console.log("Pending bookings:", pendingBookings); // Log filtered pending bookings
+
   const handleDecline = async (id: number) => {
     if (!window.confirm("Are you sure you want to decline this booking?")) return;
 
     setDecliningId(id);
 
     try {
-      const res = await fetch(`https://gurushish-8.onrender.com/bookings/${id}`, {
+      const res = await fetch(`http://localhost:3040/bookings/${id}`, {
         method: "DELETE",
       });
 

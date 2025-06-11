@@ -61,20 +61,20 @@ export default function TeacherDetailsForm() {
     if (!isFormValid()) return;
 
     setIsSubmitting(true);
+
     try {
       const payload = {
-  username: form.username,
-  subject: form.subject,
-  qualification: form.qualification,
-  experience: form.experience,
-  fee: Number(form.fee),
-  day: form.day,
-  start_time: form.start_time,
-  end_time: form.end_time,
-};
+        username: form.username,
+        subject: form.subject,
+        qualification: form.qualification,
+        experience: form.experience,
+        fee: Number(form.fee),
+        day: form.day,
+        start_time: form.start_time,
+        end_time: form.end_time,
+      };
 
-
-      const res = await fetch('http://localhost:3045/teacher', {
+      const res = await fetch('http://localhost:3040/teacher', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -84,7 +84,7 @@ export default function TeacherDetailsForm() {
         toast.success('Details submitted successfully!');
         setTimeout(() => router.push('/TeacherDetailsPage'), 1000);
       } else {
-        const errorData = await res.json();
+        const errorData = await res.json().catch(() => ({}));
         toast.error(`Error: ${errorData.message || 'Failed to submit details'}`);
       }
     } catch (error) {

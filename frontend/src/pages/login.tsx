@@ -26,7 +26,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch('https://gurushish-8.onrender.com/users/login', {
+      const res = await fetch('http://localhost:3040/users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -58,7 +58,7 @@ export default function Login() {
       if (data.role === 'teacher') {
         try {
           const profileRes = await fetch(
-            `https://gurushish-8.onrender.com/teacher-profiles/email/${encodeURIComponent(data.email)}`
+            `http://localhost:3040/teacher-profiles/email/${encodeURIComponent(data.email)}`
           );
 
           if (!profileRes.ok) {

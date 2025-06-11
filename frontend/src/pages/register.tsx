@@ -32,7 +32,7 @@ const Register = () => {
     }
 
     try {
-      const res = await fetch('https://gurushish-8.onrender.com/users', {
+      const res = await fetch('http://localhost:3040/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
