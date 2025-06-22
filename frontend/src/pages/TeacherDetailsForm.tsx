@@ -56,45 +56,44 @@ export default function TeacherDetailsForm() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!isFormValid()) return;
+  if (!isFormValid()) return;
 
-    setIsSubmitting(true);
+  setIsSubmitting(true);
 
-    try {
-      const payload = {
-        username: form.username,
-        subject: form.subject,
-        qualification: form.qualification,
-        experience: form.experience,
-        fee: Number(form.fee),
-        day: form.day,
-        start_time: form.start_time,
-        end_time: form.end_time,
-      };
+  try {
+    const payload = {
+      username: form.username,
+      subject: form.subject,
+      qualification: form.qualification,
+      experience: form.experience,
+      fee: Number(form.fee),
+      day: form.day,
+      start_time: form.start_time,
+      end_time: form.end_time,
+    };
 
-      const res = await fetch('http://localhost:3040/teacher', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
+    const res = await fetch('http://localhost:3040/teacher', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
 
-      if (res.status === 201) {
-        toast.success('Details submitted successfully!');
-        setTimeout(() => router.push('/TeacherDetailsPage'), 1000);
-      } else {
-        const errorData = await res.json().catch(() => ({}));
-        toast.error(`Error: ${errorData.message || 'Failed to submit details'}`);
-      }
-    } catch (error) {
-      console.error('Submission error:', error);
-      toast.error('An error occurred while submitting the form.');
-    } finally {
-      setIsSubmitting(false);
+    if (res.ok) {
+      toast.success('Slot created successfully!');
+      setTimeout(() => router.push('/TeacherDetailsPage'), 1000);
+    } else {
+      const errorData = await res.json().catch(() => ({}));
+      toast.error(`Error: ${errorData.message || 'Failed to submit details'}`);
     }
-  };
-
+  } catch (error) {
+    console.error('Submission error:', error);
+    toast.error('An error occurred while submitting the form.');
+  } finally {
+    setIsSubmitting(false);
+  }
+};
   return (
     <div className="max-w-3xl mx-auto p-8 bg-white mt-10 shadow-lg rounded-xl">
       <Toaster />

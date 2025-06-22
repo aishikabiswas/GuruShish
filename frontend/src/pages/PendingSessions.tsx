@@ -28,15 +28,13 @@ const PendingSessions: React.FC = () => {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [decliningId, setDecliningId] = useState<number | null>(null);
+  const [actionId, setActionId] = useState<number | null>(null);
 
-  // Get username only in client side
   const [teacherUsername, setTeacherUsername] = useState<string>("");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const username = localStorage.getItem("username") || ""; // Updated key here
-      console.log("Username from localStorage:", username); // Check if username is correct
+      const username = localStorage.getItem("username") || "";
       setTeacherUsername(username);
     }
   }, []);
@@ -64,8 +62,6 @@ const PendingSessions: React.FC = () => {
         }
 
         const data: Booking[] = await res.json();
-        console.log("Fetched bookings:", data); // Log fetched data
-
         setBookings(data);
       } catch (e) {
         console.error(e);
@@ -80,13 +76,10 @@ const PendingSessions: React.FC = () => {
 
   const pendingBookings = bookings.filter((b) => b.status.toLowerCase() === "pending");
 
-  console.log("Pending bookings:", pendingBookings); // Log filtered pending bookings
-
   const handleDecline = async (id: number) => {
     if (!window.confirm("Are you sure you want to decline this booking?")) return;
 
-    setDecliningId(id);
-
+    setActionId(id);
     try {
       const res = await fetch(`http://localhost:3040/bookings/${id}`, {
         method: "DELETE",
@@ -95,27 +88,58 @@ const PendingSessions: React.FC = () => {
       if (!res.ok) {
         const errMsg = await res.text();
         alert(`Failed to decline booking: ${res.status} ${res.statusText} - ${errMsg}`);
-        setDecliningId(null);
+        setActionId(null);
         return;
       }
 
       setBookings((prev) => prev.filter((booking) => booking.id !== id));
-      setDecliningId(null);
     } catch (error) {
       console.error("Error declining booking:", error);
       alert("Error declining booking. Please try again.");
-      setDecliningId(null);
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const handleAccept = async (id: number) => {
+    setActionId(id);
+    try {
+      const res = await fetch(`http://localhost:3040/bookings/${id}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: "confirmed" }),
+      });
+
+      if (!res.ok) {
+        const errMsg = await res.text();
+        alert(`Failed to confirm booking: ${res.status} ${res.statusText} - ${errMsg}`);
+        setActionId(null);
+        return;
+      }
+
+      setBookings((prev) =>
+        prev.map((b) => (b.id === id ? { ...b, status: "confirmed" } : b))
+      );
+    } catch (error) {
+      console.error("Error confirming booking:", error);
+      alert("Error confirming booking. Please try again.");
+    } finally {
+      setActionId(null);
     }
   };
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6">Pending Sessions</h2>
+      <h2 className="text-3xl font-bold mb-6 text-yellow-600">Pending Sessions</h2>
 
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-600 font-bold">{error}</p>}
 
-      {!loading && !error && pendingBookings.length === 0 && <p>No pending sessions found.</p>}
+      {!loading && !error && pendingBookings.length === 0 && (
+        <p>No pending sessions found.</p>
+      )}
 
       {!loading && !error && pendingBookings.length > 0 && (
         <div className="space-y-4">
@@ -127,10 +151,6 @@ const PendingSessions: React.FC = () => {
               <p>
                 <strong>Student Email:</strong> {b.student?.email || "N/A"}
               </p>
-
-              <p>
-                <strong>Teacher Username:</strong> {b.teacher?.username || "N/A"}
-              </p>
               <p>
                 <strong>Subject:</strong> {b.teacher?.subject || "N/A"}
               </p>
@@ -141,26 +161,38 @@ const PendingSessions: React.FC = () => {
                 <strong>Experience:</strong> {b.teacher?.experience || "N/A"}
               </p>
               <p>
-                <strong>Fee:</strong> {b.teacher?.fee !== undefined ? b.teacher.fee : "N/A"}
+                <strong>Fee:</strong>{" "}
+                {b.teacher?.fee !== undefined ? `₹${b.teacher.fee}` : "N/A"}
               </p>
               <p>
                 <strong>Day:</strong> {b.teacher?.day || "N/A"}
               </p>
               <p>
-                <strong>Time:</strong> {b.teacher?.start_time || "N/A"} - {b.teacher?.end_time || "N/A"}
+                <strong>Time:</strong> {b.teacher?.start_time || "N/A"} -{" "}
+                {b.teacher?.end_time || "N/A"}
               </p>
-
               <p>
-                <strong>Status:</strong> {b.status}
+                <strong>Status:</strong>{" "}
+                <span className="capitalize">{b.status}</span>
               </p>
 
-              <button
-                className="mt-3 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
-                onClick={() => handleDecline(b.id)}
-                disabled={decliningId === b.id}
-              >
-                {decliningId === b.id ? "Declining..." : "Decline"}
-              </button>
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={() => handleAccept(b.id)}
+                  disabled={actionId === b.id}
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+                >
+                  {actionId === b.id ? "Accepting..." : "Accept"}
+                </button>
+
+                <button
+                  onClick={() => handleDecline(b.id)}
+                  disabled={actionId === b.id}
+                  className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
+                >
+                  {actionId === b.id ? "Declining..." : "Decline"}
+                </button>
+              </div>
             </div>
           ))}
         </div>
