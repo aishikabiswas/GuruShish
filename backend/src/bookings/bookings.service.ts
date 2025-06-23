@@ -1,3 +1,4 @@
+// bookings.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common'; 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -54,6 +55,13 @@ export class BookingsService {
     });
   }
 
+  async findPendingByTeacher(username: string): Promise<Booking[]> {
+    return this.bookingRepo.find({
+      where: { teacher_username: username, status: 'pending' },
+      relations: ['teacher', 'student'],
+    });
+  }
+
   async deleteBooking(id: number): Promise<{ message: string }> {
     const booking = await this.bookingRepo.findOneBy({ id });
     if (!booking) {
@@ -62,14 +70,16 @@ export class BookingsService {
     await this.bookingRepo.remove(booking);
     return { message: 'Booking deleted successfully' };
   }
-
-  // New method to update booking status
-  async updateBookingStatus(id: number, status: 'confirmed' | 'declined'): Promise<Booking> {
-    const booking = await this.bookingRepo.findOneBy({ id });
+  async updateBookingStatus(id: number, status: 'confirmed' | 'declined'): Promise<{ message: string; booking: Booking }> {
+    const booking = await this.bookingRepo.findOne({ where: { id }, relations: ['teacher', 'student'] });
     if (!booking) {
       throw new NotFoundException('Booking not found');
     }
     booking.status = status;
-    return this.bookingRepo.save(booking);
+    const updated = await this.bookingRepo.save(booking);
+    return {
+      message: `Booking ${status === 'confirmed' ? 'accepted' : 'declined'} successfully`,
+      booking: updated,
+    };
   }
 }

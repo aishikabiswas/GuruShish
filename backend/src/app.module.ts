@@ -22,17 +22,16 @@ import { Booking } from './bookings/bookings.entity';
       serveRoot: '/uploads',
     }),
      TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'dpg-d14lfpfdiees73f97hg0-a', 
+        type: 'postgres',
+      host: 'localhost',
       port: 5432,
-      username: 'sailu',
-      password: 'NP07UaV1V72BVg6IcqKznSzG78PoHK5v',
-      database: 'gurushish_db',
+      username: 'sailu', // use your local PostgreSQL username
+      password: 'sailu', // replace with your local DB password
+      database: 'gurushish',
       entities: [User, Teacher, TeacherProfile, Booking],
-      synchronize: true, // Disable in production
+      synchronize: false, // Disable in production
 
     }),
-
     UserModule,
     TeacherModule,
     TeacherProfileModule,

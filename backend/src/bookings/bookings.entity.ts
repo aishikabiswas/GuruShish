@@ -29,7 +29,6 @@ export class Booking {
   @ManyToOne(() => User, (user) => user.bookings, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'student_email', referencedColumnName: 'email' })
   student: User;
-
   @ManyToOne(() => Teacher, (teacher) => teacher.bookings, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'teacher_username', referencedColumnName: 'username' })
   teacher: Teacher;
