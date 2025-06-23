@@ -196,7 +196,7 @@ const PendingSessions: React.FC = () => {
             </div>
           ))}
         </div>
-      )}
+      )} 
     </div>
   );
 };

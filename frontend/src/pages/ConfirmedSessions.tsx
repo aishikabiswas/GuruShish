@@ -45,7 +45,7 @@ export default function ConfirmedSessions() {
         setError(err.message || 'Error loading data');
       } finally {
         setLoading(false);
-      }
+      } 
     };
     fetchConfirmed();
   }, [username]);
