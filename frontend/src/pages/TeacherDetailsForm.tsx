@@ -80,6 +80,7 @@ export default function TeacherDetailsForm() {
       body: JSON.stringify(payload),
     });
 
+    
     if (res.ok) {
       toast.success('Slot created successfully!');
       setTimeout(() => router.push('/TeacherDetailsPage'), 1000);

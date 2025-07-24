@@ -36,7 +36,7 @@ export default function ConfirmedSessions() {
         return;
     const fetchConfirmed = async () => {
       try {
-        const res = await fetch(`http://localhost:3043/bookings/teacher/${username}`);
+        const res = await fetch(`https://vipreshana-3.onrender.com/bookings/teacher/${username}`);
         if (!res.ok) throw new Error('Failed to fetch confirmed sessions');
         const data: Booking[] = await res.json();
         const confirmed = data.filter((session) => session.status === 'confirmed');

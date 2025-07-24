@@ -52,7 +52,7 @@ const PendingSessions: React.FC = () => {
         setLoading(true);
 
         const res = await fetch(
-          `http://localhost:3040/bookings/teacher/${encodeURIComponent(teacherUsername)}`
+          `http://localhost:3043/bookings/teacher/${encodeURIComponent(teacherUsername)}`
         );
 
         if (!res.ok) {
@@ -81,7 +81,7 @@ const PendingSessions: React.FC = () => {
 
     setActionId(id);
     try {
-      const res = await fetch(`http://localhost:3040/bookings/${id}`, {
+      const res = await fetch(`http://localhost:3043/bookings/${id}`, {
         method: "DELETE",
       });
 
@@ -104,7 +104,7 @@ const PendingSessions: React.FC = () => {
   const handleAccept = async (id: number) => {
     setActionId(id);
     try {
-      const res = await fetch(`http://localhost:3040/bookings/${id}/status`, {
+      const res = await fetch(`http://localhost:3043/bookings/${id}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

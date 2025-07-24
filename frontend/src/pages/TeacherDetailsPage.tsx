@@ -66,7 +66,8 @@ export default function TeacherDetailsPage() {
   };
 
   if (!data.subject) return null; // or loading state
-
+  
+  
   return (
     <div className="max-w-3xl mx-auto p-8 bg-white mt-10 shadow-lg rounded-xl">
       <h1 className="text-3xl font-bold mb-6 text-center text-blue-700">Your Teaching Details</h1>

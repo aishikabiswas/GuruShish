@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -32,7 +31,7 @@ const Register = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:3040/users', {
+      const res = await fetch('http://localhost:3043/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

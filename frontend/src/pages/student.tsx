@@ -61,7 +61,7 @@ export default function StudentPage() {
   useEffect(() => {
     async function fetchTeachers() {
       try {
-        const res = await fetch('http://localhost:3040/teacher');
+        const res = await fetch('http://localhost:3043/teacher');
         const data = await res.json();
         setTeachers(data);
       } catch (err) {
@@ -72,7 +72,7 @@ export default function StudentPage() {
     async function fetchSessions() {
       if (!studentUsername) return;
       try {
-        const res = await fetch(`http://localhost:3040/bookings/student/${studentUsername}`);
+        const res = await fetch(`http://localhost:3043/bookings/student/${studentUsername}`);
         const data = await res.json();
         setSessions(data);
       } catch (err) {
@@ -87,7 +87,7 @@ export default function StudentPage() {
   const handleViewProfile = async (username: string) => {
     setLoadingProfile(true);
     try {
-      const res = await fetch(`http://localhost:3040/teacher-profiles/username/${username}`);
+      const res = await fetch(`http://localhost:3043/teacher-profiles/username/${username}`);
       const data = await res.json();
       setSelectedProfile(data);
     } catch (err) {
@@ -115,7 +115,7 @@ export default function StudentPage() {
         end_time: teacher.end_time || '',
       };
 
-      const res = await fetch('http://localhost:3040/bookings', {
+      const res = await fetch('http://localhost:3043/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(bookingData),

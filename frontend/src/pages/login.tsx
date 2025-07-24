@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
 export default function Login() {
   const router = useRouter();
 
@@ -58,7 +59,7 @@ export default function Login() {
       if (data.role === 'teacher') {
         try {
           const profileRes = await fetch(
-            `http://localhost:3043/teacher-profiles/email/${encodeURIComponent(data.email)}`
+            `https://vipreshana-3.onrender.com/teacher-profiles/email/${encodeURIComponent(data.email)}`
           );
 
           if (!profileRes.ok) {

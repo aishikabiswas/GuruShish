@@ -31,6 +31,7 @@ const PendingSessions: React.FC = () => {
 
   const studentEmail = typeof window !== 'undefined' ? localStorage.getItem('email') || '' : '';
 
+  
   useEffect(() => {
     async function fetchBookings() {
       if (!studentEmail) {
@@ -42,7 +43,7 @@ const PendingSessions: React.FC = () => {
         setError(null);
         setLoading(true);
 
-        const res = await fetch(`http://localhost:3040/bookings/student/${encodeURIComponent(studentEmail)}`);
+        const res = await fetch(`http://localhost:3043/bookings/student/${encodeURIComponent(studentEmail)}`);
 
         if (!res.ok) {
           setError(`Failed to fetch: ${res.status} ${res.statusText}`);
@@ -72,7 +73,7 @@ const PendingSessions: React.FC = () => {
 
     setDecliningId(id);  // To show loading on button
     try {
-      const res = await fetch(`http://localhost:3040/bookings/${id}`, {
+      const res = await fetch(`http://localhost:3043/bookings/${id}`, {
         method: 'DELETE',
       });
 
