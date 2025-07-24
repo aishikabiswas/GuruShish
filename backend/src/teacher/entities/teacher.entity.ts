@@ -1,13 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Unique } from 'typeorm';
 import { Booking } from '../../bookings/bookings.entity';
 
 @Entity()
+@Unique(['username']) // ✅ Add this line to fix foreign key constraint
 export class Teacher {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ length: 100 }) 
-username: string;
+  @Column({ length: 100 })
+  username: string;
 
   @Column({ length: 100 })
   subject: string;
