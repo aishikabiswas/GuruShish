@@ -265,7 +265,7 @@ export default function StudentPage() {
               <p><strong>Max Students:</strong> {selectedProfile.max_students ?? 'N/A'}</p>
               {selectedProfile.degree_certificate_path && (
                 <img
-                  src={`http://localhost:3040/${selectedProfile.degree_certificate_path.replace(/\\/g, '/')}`}
+                  src={`http://localhost:3043/${selectedProfile.degree_certificate_path.replace(/\\/g, '/')}`}
                   alt="Degree Certificate"
                   className="w-full mt-2 rounded"
                 />

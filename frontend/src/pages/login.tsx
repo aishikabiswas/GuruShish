@@ -59,7 +59,7 @@ export default function Login() {
       if (data.role === 'teacher') {
         try {
           const profileRes = await fetch(
-            `https://vipreshana-3.onrender.com/teacher-profiles/email/${encodeURIComponent(data.email)}`
+            `http://localhost:3043/teacher-profiles/email/${encodeURIComponent(data.email)}`
           );
 
           if (!profileRes.ok) {
