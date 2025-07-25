@@ -66,7 +66,7 @@ export default function TeacherDashboard() {
 
   const fetchConfirmedSessions = async (username: string) => {
     try {
-      const res = await fetch(`http://localhost:3043/bookings/teacher/${username}`);
+      const res = await fetch(`https://gurushish-10.onrender.com/bookings/teacher/${username}`);
       if (!res.ok) throw new Error('Failed to fetch confirmed sessions');
       const data = await res.json();
       const confirmed = data.filter((s: Booking) => s.status === 'confirmed');
@@ -96,7 +96,7 @@ export default function TeacherDashboard() {
         formData.append('degreeCertificate', degreeCertificate);
       }
 
-      const response = await fetch('http://localhost:3043/teacher-profiles', {
+      const response = await fetch('https://gurushish-10.onrender.com/teacher-profiles', {
         method: 'POST',
         body: formData,
       });

@@ -21,7 +21,7 @@ const StudentConfirmedSessions = () => {
     const fetchConfirmedSessions = async () => {
       try {
         const response = await fetch(
-          `https://gurushish.onrender.com/bookings/student/${studentEmail}`
+          `https://gurushish-10.onrender.com/bookings/student/${studentEmail}`
         );
 
         if (!response.ok) {
